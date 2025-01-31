@@ -19,11 +19,6 @@ jobs:
       # Checkout the repository
       - uses: actions/checkout@v4
 
-      # Load .env file and set environment variables
-      - name: create .env file
-        env:
-          PORT: ${{ env.PORT }}
-      
       # Set up Node.js
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -36,3 +31,5 @@ jobs:
 
       # Restart the PM2 process with the PORT from .env
       - run: pm2 restart shopdev-backend --update-env
+        env:
+          PORT: ${{ env.PORT }}
