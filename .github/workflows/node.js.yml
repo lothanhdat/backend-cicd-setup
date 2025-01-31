@@ -31,6 +31,3 @@ jobs:
 
       # Restart the PM2 process with the PORT from .env
       - run: pm2 restart shopdev-backend --update-env
-        env:
-          PORT: ${{ env.PORT }}
-          
