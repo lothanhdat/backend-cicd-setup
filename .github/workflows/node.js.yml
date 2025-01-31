@@ -8,7 +8,6 @@ on:
     branches: [ "main" ]
 jobs:
   build:
-
     runs-on: self-hosted
 
     strategy:
@@ -17,25 +16,31 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+      # Checkout the repository
+      - uses: actions/checkout@v4
 
-    # Load .env file and set environment variables
-  - name: Load .env file
-    run: |
-      while read -r line; do
-        if [[ $line != \#* && $line == *"="* ]]; then
-          name=$(echo $line | cut -d '=' -f 1)
-          value=$(echo $line | cut -d '=' -f 2-)
-          echo "$name=$value" >> $GITHUB_ENV
-        fi
-      done < .env
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    # Restart the PM2 process with the PORT from .env
-  - run: pm2 restart shopdev-backend --update-env
-    env:
-      PORT: ${{ env.PORT }}
+      # Load .env file and set environment variables
+      - name: Load .env file
+        run: |
+          while read -r line; do
+            if [[ $line != \#* && $line == *"="* ]]; then
+              name=$(echo $line | cut -d '=' -f 1)
+              value=$(echo $line | cut -d '=' -f 2-)
+              echo "$name=$value" >> $GITHUB_ENV
+            fi
+          done < .env
+
+      # Set up Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Install dependencies
+      - run: npm ci
+
+      # Restart the PM2 process with the PORT from .env
+      - run: pm2 restart shopdev-backend --update-env
+        env:
+          PORT: ${{ env.PORT }}
