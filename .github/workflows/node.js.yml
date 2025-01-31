@@ -21,17 +21,9 @@ jobs:
 
       # Load .env file and set environment variables
       - name: create .env file
-        run: touch .env
-      - name: Load .env file
-        run: |
-          while read -r line; do
-            if [[ $line != \#* && $line == *"="* ]]; then
-              name=$(echo $line | cut -d '=' -f 1)
-              value=$(echo $line | cut -d '=' -f 2-)
-              echo "$name=$value" >> $GITHUB_ENV
-            fi
-          done < .env
-
+        env:
+          PORT: ${{ env.PORT }}
+      
       # Set up Node.js
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -44,5 +36,3 @@ jobs:
 
       # Restart the PM2 process with the PORT from .env
       - run: pm2 restart shopdev-backend --update-env
-        env:
-          PORT: ${{ env.PORT }}
